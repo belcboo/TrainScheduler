@@ -1,6 +1,6 @@
 // Initialize Firebase
 var config = {
-  apiKey: "AIzaSyA16N0RP_nel7lvaTAgjKXpvPc8yjGjgoM",
+  apiKey: "",
   authDomain: "vast-math-155602.firebaseapp.com",
   databaseURL: "https://vast-math-155602.firebaseio.com",
   projectId: "vast-math-155602",
