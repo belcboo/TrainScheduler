@@ -1,0 +1,12 @@
+.card {
+  margin-top: 20px;
+  padding: 0;
+}
+
+.card-header {
+  font-weight: bold;
+}
+
+label {
+  font-weight: bold;
+}
