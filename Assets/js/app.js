@@ -16,6 +16,7 @@ var database = firebase.database();
 setInterval(function() {
   console.log("interval run");
 
+
   //Clears all the data in the table to avoid duplicates.
   $("#trainTable > tbody").empty();
 
@@ -33,7 +34,9 @@ $("#addTrain").on('click', function(event) {
   var trainName = $("#trainName").val().trim();
   var trainOrig = $("#trainOrig").val().trim();
   var trainTime = moment($("#trainTime").val().trim(), "HH:mm").format("X");
-  var trainFreq = $("#trainFreq").val().trim();
+  var trainFreq = moment($("#trainFreq").val().trim(), 'HH:mm').diff(moment().startOf('day'), 'seconds');
+
+  console.log(trainFreq);
 
   // Push to db
   database.ref().push({
@@ -65,6 +68,24 @@ function updater() {
   database.ref().on("child_added", function(childSnapshot) {
     console.log(childSnapshot.val());
 
+    if(childSnapshot.val().tTime >= 0){
+
+      var oldArrival = parseInt(childSnapshot.val().tTime);
+      var trainFreq = parseInt(childSnapshot.val().tFreq);
+      var newArrival = oldArrival + trainFreq;
+
+      // database.ref().set({
+      //   tTime: newArrival
+      // });
+      console.log("new push");
+      console.log("oldArrival " + oldArrival);
+      console.log("newArrival " + newArrival);
+
+      //This if was supposed to update the new time of arrival for the train but
+      //I couldnt figure how to set the new value in the same kay lol.
+
+    };
+
     //Storing db from temp variable into variables
     var trainName = childSnapshot.val().tName;
     var trainOrig = childSnapshot.val().tOrig;
@@ -73,15 +94,17 @@ function updater() {
 
     //Converting the time to display in the table from unix time to HH:MM
     var fixedTime = moment.unix(trainTime).format("hh:mm A");
-    console.log(fixedTime);
+
+    //Convert seconds to HH;mm
+    var fixedFreq = moment.utc(trainFreq*1000).format('HH:mm');
 
     //Calculate the difference between the arrival time and the actual time.
-    var mins = moment().diff(moment(trainTime, "X"), "minutes") * (-1);
-    fixedTime
-    console.log(mins);
+    var mins = moment().diff(moment(trainTime, "X"), "minutes") * (-1);fixedTime
+    // console.log(mins);
+
 
     //Push all the rows of data into the table.
-    $("#trainTable > tbody").append("<tr><td>" + trainName + "</td><td>" + trainOrig + "</td><td>" + trainFreq + "</td><td>" + fixedTime + "</td><td>" + mins + "</td></tr>");
+    $("#trainTable > tbody").append("<tr><td>" + trainName + "</td><td>" + trainOrig + "</td><td>" + fixedFreq + "</td><td>" + fixedTime + "</td><td>" + mins + "</td></tr>");
   });
 }
 
